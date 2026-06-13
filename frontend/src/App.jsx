@@ -24,6 +24,7 @@ ChartJS.register(
 );
 
 function App() {
+  const API_URL = import.meta.env.VITE_API_URL;
   const [loading, setLoading] = useState(false);
   const [step, setStep] = useState("");
 
@@ -76,7 +77,7 @@ function App() {
   try {
 
     const response = await axios.post(
-      "http://127.0.0.1:8000/generate-pdf",
+      `${API_URL}/generate-pdf`,
       form,
       {
         responseType: "blob",
@@ -119,7 +120,7 @@ function App() {
   try {
 
     const response = await axios.post(
-      "http://127.0.0.1:8000/evaluate",
+      `${API_URL}/evaluate`,
       form
     );
 
