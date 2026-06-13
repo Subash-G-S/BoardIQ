@@ -4,6 +4,9 @@ from agents.technical import analyze as technical
 from agents.risk import analyze as risk
 from agents.ceo import decide
 from scorecard import calculate_score
+from agents.advisor import advise
+import json
+from agents.competitor import analyze as competitor
 
 def evaluate_startup(data):
 
@@ -29,6 +32,7 @@ Competitive Advantage:
     reports = []
 
     market_report, _ = market(startup)
+    competitor_report = competitor(startup)
     reports.append(market_report)
 
     finance_report, _ = finance(startup, market_report)
@@ -51,13 +55,105 @@ Competitive Advantage:
 
     decision, _ = decide(reports)
 
+    advisor_response = advise(
+    startup,
+    reports
+)
+
+    try:
+        advisor = json.loads(advisor_response)
+
+    except:
+        advisor = {
+            "recommendations": [
+                "No recommendations generated"
+            ]
+        }
+
     overall_score = calculate_score(reports)
 
     return {
-        "overall_score": overall_score,
-        "market": market_report,
-        "finance": finance_report,
-        "technical": technical_report,
-        "risk": risk_report,
-        "ceo": decision
-    }
+    "overall_score": overall_score,
+    "market": market_report,
+    "competitors": competitor_report,
+    "finance": finance_report,
+    "technical": technical_report,
+    "risk": risk_report,
+    "ceo": decision,
+    "advisor": advisor
+}
+from reportlab.platypus import (
+    SimpleDocTemplate,
+    Paragraph,
+    Spacer
+)
+
+from reportlab.lib.styles import getSampleStyleSheet
+
+
+def generate_pdf_report(result):
+
+    pdf_file = "investment_report.pdf"
+
+    doc = SimpleDocTemplate(pdf_file)
+
+    styles = getSampleStyleSheet()
+
+    elements = []
+
+    elements.append(
+        Paragraph(
+            "BoardIQ Investment Report",
+            styles["Title"]
+        )
+    )
+
+    elements.append(Spacer(1, 20))
+
+    elements.append(
+        Paragraph(
+            f"Overall Score: {result['overall_score']}/10",
+            styles["Heading2"]
+        )
+    )
+
+    elements.append(
+        Paragraph(
+            f"Decision: {result['ceo']['decision']}",
+            styles["Heading2"]
+        )
+    )
+
+    elements.append(Spacer(1, 20))
+
+    sections = [
+        ("Market Analysis", result["market"]["reason"]),
+        ("Finance Analysis", result["finance"]["reason"]),
+        ("Technical Analysis", result["technical"]["reason"]),
+        ("Risk Analysis", result["risk"]["reason"]),
+        ("CEO Summary", result["ceo"]["reason"])
+    ]
+
+    for title, content in sections:
+
+        elements.append(
+            Paragraph(
+                title,
+                styles["Heading2"]
+            )
+        )
+
+        elements.append(
+            Paragraph(
+                content,
+                styles["BodyText"]
+            )
+        )
+
+        elements.append(
+            Spacer(1, 10)
+        )
+
+    doc.build(elements)
+
+    return pdf_file
