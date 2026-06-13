@@ -78,7 +78,7 @@ function App() {
 
     const response = await axios.post(
       `${API_URL}/generate-pdf`,
-      form,
+      result,
       {
         responseType: "blob",
       }

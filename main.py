@@ -24,9 +24,8 @@ def evaluate(data: dict):
 @app.post("/generate-pdf")
 def generate_pdf(data: dict):
 
-    result = evaluate_startup(data)
 
-    pdf_file = generate_pdf_report(result)
+    pdf_file = generate_pdf_report(data)
 
     return FileResponse(
         pdf_file,

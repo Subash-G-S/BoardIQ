@@ -153,6 +153,56 @@ def generate_pdf_report(result):
         elements.append(
             Spacer(1, 10)
         )
+        # Competitor Analysis
+
+        elements.append(
+            Paragraph(
+                "Competitor Analysis",
+                styles["Heading2"]
+            )
+        )
+
+        for competitor in result["competitors"]["competitors"]:
+
+            elements.append(
+                Paragraph(
+                    f"• {competitor}",
+                    styles["BodyText"]
+                )
+            )
+
+        elements.append(
+    Paragraph(
+        f"Biggest Threat: {result['competitors']['threat']}",
+        styles["BodyText"]
+    )
+)
+
+        elements.append(
+    Spacer(1, 15)
+)
+
+# Board Recommendations
+
+        elements.append(
+    Paragraph(
+        "Board Recommendations",
+        styles["Heading2"]
+    )
+)
+
+        for recommendation in result["advisor"]["recommendations"]:
+
+            elements.append(
+        Paragraph(
+            f"✓ {recommendation}",
+            styles["BodyText"]
+        )
+    )
+
+        elements.append(
+    Spacer(1, 15)
+)
 
     doc.build(elements)
 
