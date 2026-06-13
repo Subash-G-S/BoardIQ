@@ -93,6 +93,7 @@ from reportlab.lib.styles import getSampleStyleSheet
 
 def generate_pdf_report(result):
 
+
     pdf_file = "investment_report.pdf"
 
     doc = SimpleDocTemplate(pdf_file)
@@ -100,6 +101,8 @@ def generate_pdf_report(result):
     styles = getSampleStyleSheet()
 
     elements = []
+
+# Title
 
     elements.append(
         Paragraph(
@@ -110,11 +113,13 @@ def generate_pdf_report(result):
 
     elements.append(Spacer(1, 20))
 
+# Score & Decision
+
     elements.append(
         Paragraph(
             f"Overall Score: {result['overall_score']}/10",
             styles["Heading2"]
-        )
+        )  
     )
 
     elements.append(
@@ -124,7 +129,16 @@ def generate_pdf_report(result):
         )
     )
 
+    elements.append(
+        Paragraph(
+            f"Confidence: {result['ceo']['confidence']}%",
+            styles["BodyText"]
+        )   
+    )
+
     elements.append(Spacer(1, 20))
+
+# Analyst Reports
 
     sections = [
         ("Market Analysis", result["market"]["reason"]),
@@ -151,59 +165,65 @@ def generate_pdf_report(result):
         )
 
         elements.append(
-            Spacer(1, 10)
+            Spacer(1, 12)
         )
-        # Competitor Analysis
+
+# Competitor Analysis
+
+    elements.append(
+        Paragraph(
+            "Competitor Analysis",
+            styles["Heading2"]
+        )
+    )
+
+    for competitor in result["competitors"]["competitors"]:
 
         elements.append(
             Paragraph(
-                "Competitor Analysis",
-                styles["Heading2"]
+                f"• {competitor}",
+                styles["BodyText"]
             )
         )
 
-        for competitor in result["competitors"]["competitors"]:
-
-            elements.append(
-                Paragraph(
-                    f"• {competitor}",
-                    styles["BodyText"]
-                )
-            )
-
-        elements.append(
-    Paragraph(
-        f"Biggest Threat: {result['competitors']['threat']}",
-        styles["BodyText"]
+    elements.append(
+        Spacer(1, 10)
     )
-)
 
-        elements.append(
-    Spacer(1, 15)
-)
-
-# Board Recommendations
-
-        elements.append(
-    Paragraph(
-        "Board Recommendations",
-        styles["Heading2"]
-    )
-)
-
-        for recommendation in result["advisor"]["recommendations"]:
-
-            elements.append(
+    elements.append(
         Paragraph(
-            f"✓ {recommendation}",
+            f"Biggest Threat: {result['competitors']['threat']}",
             styles["BodyText"]
         )
     )
 
+    elements.append(
+        Spacer(1, 20)
+    )
+
+# Recommendations
+
+    elements.append(
+        Paragraph(
+            "Board Recommendations",
+            styles["Heading2"]
+        )
+    )
+
+    for recommendation in result["advisor"]["recommendations"]:
+
         elements.append(
-    Spacer(1, 15)
-)
+            Paragraph(
+                f"✓ {recommendation}",
+                styles["BodyText"]
+            )
+        )
+
+    elements.append(
+        Spacer(1, 20)
+    )
 
     doc.build(elements)
 
     return pdf_file
+
